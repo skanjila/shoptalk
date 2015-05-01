@@ -1,0 +1,114 @@
+<script src="/js/jquery-1.9.1.min.js"></script>
+<script src="/js/handlebars.js"></script>
+<script src="/js/ember-1.0.0-rc.3.js"></script>
+<script src="/js/ember-data-latest.min.js"></script>
+
+<script type="text/x-handlebars">
+<header><a href="/example/ember">Sails.JS Examples: Ember</a></header>
+
+<div id="content">
+{{outlet}}
+</div> 
+
+<footer class="clear">&copy;2013 Nobody<div class="float_right"><a href="/">Examples</a></div></footer>
+</script>
+
+<script type="text/x-handlebars" id="players">
+	<div class='players'>
+		{{#each model}}
+			{{#linkTo details this tagName="div"}}
+				<div id="{{id}}" class="player"><span class="name">{{name}}</span><span class="score">{{score}}</span></div>
+			{{/linkTo}}
+		{{/each}}
+	</div>
+
+	{{outlet}}
+</script>
+
+<script type="text/x-handlebars" id="details">
+
+<div class='details'>
+	<div class="name">
+	{{#if model.name}}
+		{{model.name}}
+	</div>
+	<div class="controls">
+		<button {{action 'addPoints' model}}>Add 5 points</button>
+	{{else}}
+		Click a Player to select!
+	{{/if}}
+	</div>
+</div>
+
+</script>
+
+<script>
+var socket = io.connect();
+
+socket.request('/players',{},function(response) {
+    Leaderboard = Ember.Application.create();
+
+	//Routes
+
+	Leaderboard.Router.map(function() {
+		this.resource('players', function() {
+			this.resource('details', {path: ':_id'});
+		});
+	});
+
+	Leaderboard.IndexRoute = Ember.Route.extend({
+		redirect: function() {
+
+			this.transitionTo('players')
+		}
+	});
+	Leaderboard.PlayersRoute = Ember.Route.extend({
+		model: function() {
+			return Leaderboard.Players.find();
+		}
+	});
+
+	//Controllers
+	Leaderboard.PlayersController = Ember.Controller.extend({
+		selectedID: function() {
+			return true;
+		}
+	});
+
+	Leaderboard.DetailsController = Ember.Controller.extend({
+		addPoints: function(player) {
+			socket.request('/players/update', {
+				id: player.get('id'),
+				score: player.get('score') + 5
+			},updateScoreDom);
+		}
+	});
+
+	//Views
+
+	//Models
+
+	Leaderboard.Store = DS.Store.extend({
+		revision: 12,
+		adapter: 'DS.FixtureAdapter'
+	});
+
+	Leaderboard.Players = DS.Model.extend({
+		name: DS.attr('string'),
+		score: DS.attr('integer')
+	});
+
+	Leaderboard.Players.FIXTURES = response;
+});
+
+socket.on('message', function(response) {
+	updateScoreDom(response.data);
+});
+
+// Methods
+var updateScoreDom = function(response){
+	var player = Leaderboard.Players.find(response.id);
+	player.set('score', response.score);
+};
+
+</script>

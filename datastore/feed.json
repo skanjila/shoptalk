@@ -1,8 +1,34 @@
 {
-  "content": {
-    "id": 0,
-    "description": "great feed",
-    "company": "hey what a cool company"
-    "timestamp": "06/21/2015 12:00:00"
-  }
+  "title": "Shoptalk Schema",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+    },
+    "title": {
+      "type": "string",
+    },
+    "description": {
+      "type": "string",
+    },
+    "image": {
+      "type": "string",
+    },
+    "source": {
+      "type": "string",
+    },
+    "postedBy": {
+      "type": "string",
+    },
+    "link": {
+      "type": "string",
+    },
+},
+"required": ["id", "type","name","title","description","image","source","postedBy","link"]
 }
