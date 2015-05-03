@@ -3,7 +3,7 @@
  */
 module.exports.connections = {
 
-    shoptalk-cassandra-connection: {
+    shoptalkcassandraconnection: {
 
     module        : 'sails-cassandra',
 
@@ -13,7 +13,6 @@ module.exports.connections = {
 
         // cassandra driver options
         contactPoints : [ '127.0.0.1' ],
-        keyspace      : 'shoptalk',
-...
+        keyspace      : 'shoptalk'
 }
 };
