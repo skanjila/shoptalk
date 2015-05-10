@@ -13,6 +13,7 @@ stub code but will eventually contain views localized and device independent.
 * Download and Install [node.js](https://nodejs.org/download/)
 * Download Cassandra - [cassandra](http://www.apache.org/dyn/closer.cgi?path=/cassandra/2.0.14/apache-cassandra-2.0.14-bin.tar.gz)
 * Extract the above archive and start Cassandra as admin/sudo (in "bin" directory, cassandra.bat/cassandra)
+* Create shoptalk Keyspace via cqlsh - `CREATE KEYSPACE IF NOT EXISTS shoptalk WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 1 };`
 * Clone this git repo `git clone git@github.com:skanjila/shoptalk.git`
 * Navigate to the cloned directory on your machine, and execute the following commands:
 

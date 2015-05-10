@@ -10,17 +10,17 @@ module.exports = {
     attributes	: {
         id: {
             type: 'STRING',
-            required: true
+            primaryKey: true
         },
         passcode: {
             type: 'STRING',
             required: true
         },
-        phone: {
+        name: {
             type: 'STRING',
             required: true
-        },
-        name: {
+        }/*,
+        phone: {
             type: 'STRING',
             required: true
         },
@@ -31,6 +31,6 @@ module.exports = {
         gender: {
             type: 'STRING',
             required: true
-        }
+        } */
     }
 };
