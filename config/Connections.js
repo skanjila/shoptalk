@@ -8,7 +8,7 @@ module.exports.connections = {
     module        : 'sails-cassandra',
 
         // typical sails/waterline options (see comment below)
-        user          : 'username',
+        user          : 'shoptalk',
         password      : 'password',
 
         // cassandra driver options

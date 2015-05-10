@@ -8,16 +8,29 @@
 module.exports = {
 
     attributes	: {
-        id: 'STRING',
-        passcode: 'STRING',
-        phone: 'STRING',
-        name: 'STRING',
-        dob: 'DATE',
-        gender: 'STRING',
-        contacts: {
-            collection: 'user',
-            via: 'id'
+        id: {
+            type: 'STRING',
+            required: true
+        },
+        passcode: {
+            type: 'STRING',
+            required: true
+        },
+        phone: {
+            type: 'STRING',
+            required: true
+        },
+        name: {
+            type: 'STRING',
+            required: true
+        },
+        dob: {
+            type: 'DATE',
+            required: true
+        },
+        gender: {
+            type: 'STRING',
+            required: true
         }
     }
 };
-
