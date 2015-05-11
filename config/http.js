@@ -9,79 +9,183 @@
  * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.http.html
  */
 
-module.exports.http = {
+var oauth2orize = require('oauth2orize'),
+    passport = require('passport'),
+    login = require('connect-ensure-login'),
+    bcrypt = require('bcrypt'),
+    trustedClientPolicy = require('../api/policies/isTrustedClient.js');
 
-  /****************************************************************************
-  *                                                                           *
-  * Express middleware to use for every Sails request. To add custom          *
-  * middleware to the mix, add a function to the middleware config object and *
-  * add its key to the "order" array. The $custom key is reserved for         *
-  * backwards-compatibility with Sails v0.9.x apps that use the               *
-  * `customMiddleware` config option.                                         *
-  *                                                                           *
-  ****************************************************************************/
+// Create OAuth 2.0 server (should be on a different port)
+var server = oauth2orize.createServer();
 
-  // middleware: {
+server.serializeClient(function (client, done) {
+    return done(null, client.id);
+});
 
-  /***************************************************************************
-  *                                                                          *
-  * The order in which middleware should be run for HTTP request. (the Sails *
-  * router is invoked by the "router" middleware below.)                     *
-  *                                                                          *
-  ***************************************************************************/
+server.deserializeClient(function (id, done) {
+    Client.findOne(id, function (err, client) {
+        if (err) {
+            return done(err);
+        }
+        return done(null, client);
+    });
+});
 
-    // order: [
-    //   'startRequestTimer',
-    //   'cookieParser',
-    //   'session',
-    //   'myRequestLogger',
-    //   'bodyParser',
-    //   'handleBodyParserError',
-    //   'compress',
-    //   'methodOverride',
-    //   'poweredBy',
-    //   '$custom',
-    //   'router',
-    //   'www',
-    //   'favicon',
-    //   '404',
-    //   '500'
-    // ],
+// Exchange username & password for access token.
+server.exchange(oauth2orize.exchange.password(function (client, username, password, scope, done) {
+    User.findOne({email: username}, function (err, user) {
+        if (err) {
+            return done(err);
+        }
+        if (!user) {
+            return done(null, false);
+        }
 
-  /****************************************************************************
-  *                                                                           *
-  * Example custom middleware; logs each request to the console.              *
-  *                                                                           *
-  ****************************************************************************/
+        var pwdCompare = bcrypt.compareSync(password, user.hashedPassword);
+        if (!pwdCompare) {
+            return done(null, false);
+        }
 
-    // myRequestLogger: function (req, res, next) {
-    //     console.log("Requested :: ", req.method, req.url);
-    //     return next();
-    // }
+        // Remove Refresh and Access tokens and create new ones
+        RefreshToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+            if (err) {
+                return done(err);
+            } else {
+                AccessToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+                    if (err) {
+                        return done(err);
+                    } else {
+                        RefreshToken.create({userId: user.id, clientId: client.clientId}, function (err, refreshToken) {
+                            if (err) {
+                                return done(err);
+                            } else {
+                                AccessToken.create({
+                                    userId: user.id,
+                                    clientId: client.clientId
+                                }, function (err, accessToken) {
+                                    if (err) {
+                                        return done(err);
+                                    } else {
+                                        done(null, accessToken.token, refreshToken.token, {'expires_in': sails.config.oauth.tokenLife});
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+}));
 
+// Exchange refreshToken for access token.
+server.exchange(oauth2orize.exchange.refreshToken(function (client, refreshToken, scope, done) {
 
-  /***************************************************************************
-  *                                                                          *
-  * The body parser that will handle incoming multipart HTTP requests. By    *
-  * default as of v0.10, Sails uses                                          *
-  * [skipper](http://github.com/balderdashy/skipper). See                    *
-  * http://www.senchalabs.org/connect/multipart.html for other options.      *
-  *                                                                          *
-  ***************************************************************************/
+    RefreshToken.findOne({token: refreshToken}, function (err, token) {
 
-    // bodyParser: require('skipper')
+        if (err) {
+            return done(err);
+        }
+        if (!token) {
+            return done(null, false);
+        }
+        if (!token) {
+            return done(null, false);
+        }
 
-  // },
+        User.findOne({id: token.userId}, function (err, user) {
 
-  /***************************************************************************
-  *                                                                          *
-  * The number of seconds to cache flat files on disk being served by        *
-  * Express static middleware (by default, these files are in `.tmp/public`) *
-  *                                                                          *
-  * The HTTP static cache is only active in a 'production' environment,      *
-  * since that's the only time Express will cache flat-files.                *
-  *                                                                          *
-  ***************************************************************************/
+            if (err) {
+                return done(err);
+            }
+            if (!user) {
+                return done(null, false);
+            }
 
-  // cache: 31557600000
+            // Remove Refresh and Access tokens and create new ones
+            RefreshToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+                if (err) {
+                    return done(err);
+                } else {
+                    AccessToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+                        if (err) {
+                            return done(err);
+                        } else {
+                            RefreshToken.create({
+                                userId: user.id,
+                                clientId: client.clientId
+                            }, function (err, refreshToken) {
+                                if (err) {
+                                    return done(err);
+                                } else {
+                                    AccessToken.create({
+                                        userId: user.id,
+                                        clientId: client.clientId
+                                    }, function (err, accessToken) {
+                                        if (err) {
+                                            return done(err);
+                                        } else {
+                                            done(null, accessToken.token, refreshToken.token, {'expires_in': sails.config.oauth.tokenLife});
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+    });
+}));
+
+module.exports = {
+    http: {
+        customMiddleware: function (app) {
+
+            // Initialize passport
+            app.use(passport.initialize());
+            app.use(passport.session());
+
+            /***** OAuth authorize endPoints *****/
+
+            app.get('/oauth/authorize',
+                login.ensureLoggedIn(),
+                server.authorize(function (clientId, redirectURI, done) {
+
+                    Client.findOne({clientId: clientId}, function (err, client) {
+                        if (err) {
+                            return done(err);
+                        }
+                        if (!client) {
+                            return done(null, false);
+                        }
+                        if (client.redirectURI != redirectURI) {
+                            return done(null, false);
+                        }
+                        return done(null, client, client.redirectURI);
+                    });
+                }),
+                server.errorHandler(),
+                function (req, res) {
+                    res.render('dialog', {
+                        transactionID: req.oauth2.transactionID,
+                        user: req.user,
+                        client: req.oauth2.client
+                    });
+                }
+            );
+
+            app.post('/oauth/authorize/decision',
+                login.ensureLoggedIn(),
+                server.decision());
+
+            /***** OAuth token endPoint *****/
+            app.post('/oauth/token',
+                trustedClientPolicy,
+                passport.authenticate(['basic', 'oauth2-client-password'], {session: false}),
+                server.token(),
+                server.errorHandler()
+            );
+        }
+    }
 };

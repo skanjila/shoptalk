@@ -4,16 +4,18 @@
 
 module.exports = {
 
+    // TODO - Refresh tokens are retrieved using userId and clientId, so make them primary keys
+    // TODO - Secondary index on token to enable quick retrieval
     attributes: {
-        token: {
+        userId: {
             type: 'STRING',
             primaryKey: true
         },
-        userId: {
-            type: 'STRING',
-            required: true
-        },
         clientId: {
+            type: 'STRING',
+            primaryKey: true
+        },
+        token: {
             type: 'STRING',
             required: true
         }
