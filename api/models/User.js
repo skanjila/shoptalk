@@ -7,12 +7,12 @@
 
 module.exports = {
 
-    attributes	: {
+    attributes: {
         id: {
             type: 'STRING',
             primaryKey: true
         },
-        passcode: {
+        hashedPassword: {
             type: 'STRING',
             required: true
         },
@@ -31,6 +31,21 @@ module.exports = {
         gender: {
             type: 'STRING',
             required: true
-        } */
+        } */,
+        // Override toJSON method to remove password from API
+        toJSON: function() {
+            var obj = this.toObject();
+            delete obj.password;
+            return obj;
+        }
+    },
+
+    beforeCreate: function(values, next){
+        bcrypt.hash(values.password, 10, function(err, hash) {
+            if(err) return next(err);
+            values.hashedPassword = hash;
+            delete values.password;
+            next();
+        });
     }
 };
