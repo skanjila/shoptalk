@@ -5,14 +5,34 @@
 * @docs        :: http://sailsjs.org/#!documentation/models
 */
 
-module.exports = {
+/**
+ CREATE TABLE User (
+     phone varchar PRIMARY KEY,
+     id uuid,
+     password varchar,
+     name varchar,
+     dob timestamp,
+     gender varchar
+ );
+ */
 
+var bcrypt = require('bcrypt');
+
+module.exports = {
+    autoCreatedAt: false,
+    autoUpdatedAt: false,
+    autoPK: false,
     attributes: {
-        id: {
+        phone: {
             type: 'STRING',
             primaryKey: true
         },
-        hashedPassword: {
+        // future-proof by having a synthetic id just in case..
+        id: {
+            type: 'STRING',
+            required: true
+        },
+        password: {
             type: 'STRING',
             required: true
         },
@@ -20,10 +40,6 @@ module.exports = {
             type: 'STRING',
             required: true
         }/*,
-        phone: {
-            type: 'STRING',
-            required: true
-        },
         dob: {
             type: 'DATE',
             required: true
@@ -40,11 +56,15 @@ module.exports = {
         }
     },
 
+    beforeValidate: function(values, next){
+        values.id = UUIDService.uuid();
+        next();
+    },
+
     beforeCreate: function(values, next){
         bcrypt.hash(values.password, 10, function(err, hash) {
             if(err) return next(err);
-            values.hashedPassword = hash;
-            delete values.password;
+            values.password = hash;
             next();
         });
     }

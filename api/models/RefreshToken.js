@@ -2,27 +2,39 @@
  * Refresh Token to be used for OAuth.
  */
 
-module.exports = {
+/*
+ CREATE TABLE RefreshToken (
+     code uuid,
+     clientId uuid,
+     userId uuid,
+     PRIMARY KEY (userId, clientId)
+ )
+ */
 
-    // TODO - Refresh tokens are retrieved using userId and clientId, so make them primary keys
-    // TODO - Secondary index on token to enable quick retrieval
+module.exports = {
+    // TODO - Secondary index on code to enable quick retrieval
+    autoCreatedAt: false,
+    autoUpdatedAt: false,
+    autoPK: false,
     attributes: {
-        userId: {
-            type: 'STRING',
-            primaryKey: true
-        },
         clientId: {
             type: 'STRING',
-            primaryKey: true
+            required: true/*,
+             primaryKey: true */
         },
-        token: {
+        userId: {
+            type: 'STRING',
+            required: true/*,
+             primaryKey: true */
+        },
+        code: {
             type: 'STRING',
             required: true
         }
     },
 
-    beforeCreate: function(values, next){
-        values.token = UUIDService.uuid();
+    beforeValidate: function(values, next){
+        values.code = UUIDService.uuid();
         next();
     }
 };

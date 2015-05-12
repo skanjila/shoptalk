@@ -11,7 +11,7 @@
 
 module.exports.models = {
     connection: 'shoptalkcassandraconnection',
-    migrate: 'create'
+    migrate: 'safe'
 
   /***************************************************************************
   *                                                                          *

@@ -21,7 +21,7 @@ module.exports = function (req, res, next) {
             if (!clientId) {
                 return res.send(400, 'missing client_id parameter');
             } else {
-                // Make sure client is trusted
+                // Make sure client is found..
                 Client.findOne({clientId: clientId}, function (err, client) {
                     if (err) {
                         return res.send(500, err.message);

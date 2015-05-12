@@ -2,12 +2,25 @@
  * Access Token to be used for OAuth.
  */
 
-module.exports = {
+/*
+ CREATE TABLE AccessToken (
+     code uuid,
+     userId uuid,
+     clientId uuid,
+     scope text,
+     PRIMARY KEY (userId, clientId)
+ );
+*/
 
+module.exports = {
+    autoCreatedAt: false,
+    autoUpdatedAt: false,
+    autoPK: false,
     attributes	: {
-        token: {
+        code: {
             type: 'STRING',
-            primaryKey: true
+            required: true/*,
+             primaryKey: true */
         },
         clientId: {
             type: 'STRING',
@@ -23,7 +36,7 @@ module.exports = {
         }
     },
 
-    beforeCreate: function(values, next){
+    beforeValidate: function(values, next){
         values.token = UUIDService.uuid();
         next();
     }

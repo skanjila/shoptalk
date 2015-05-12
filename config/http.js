@@ -33,7 +33,7 @@ server.deserializeClient(function (id, done) {
 
 // Exchange username & password for access token.
 server.exchange(oauth2orize.exchange.password(function (client, username, password, scope, done) {
-    User.findOne({email: username}, function (err, user) {
+    User.findOne({phone: username}, function (err, user) {
         if (err) {
             return done(err);
         }
@@ -41,32 +41,29 @@ server.exchange(oauth2orize.exchange.password(function (client, username, passwo
             return done(null, false);
         }
 
-        var pwdCompare = bcrypt.compareSync(password, user.hashedPassword);
+        var pwdCompare = bcrypt.compareSync(password, user.password);
         if (!pwdCompare) {
             return done(null, false);
         }
 
         // Remove Refresh and Access tokens and create new ones
-        RefreshToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+        RefreshToken.destroy({userId: user.id, clientId: client.id}, function (err) {
             if (err) {
                 return done(err);
             } else {
-                AccessToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+                AccessToken.destroy({userId: user.id, clientId: client.id}, function (err) {
                     if (err) {
                         return done(err);
                     } else {
-                        RefreshToken.create({userId: user.id, clientId: client.clientId}, function (err, refreshToken) {
+                        RefreshToken.create({userId: user.id, clientId: client.id}, function (err, refreshToken) {
                             if (err) {
                                 return done(err);
                             } else {
-                                AccessToken.create({
-                                    userId: user.id,
-                                    clientId: client.clientId
-                                }, function (err, accessToken) {
+                                AccessToken.create({userId: user.id, clientId: client.id}, function (err, accessToken) {
                                     if (err) {
                                         return done(err);
                                     } else {
-                                        done(null, accessToken.token, refreshToken.token, {'expires_in': sails.config.oauth.tokenLife});
+                                        done(null, accessToken.code, refreshToken.code, {'expires_in': sails.config.oauth.tokenLife});
                                     }
                                 });
                             }
@@ -81,7 +78,7 @@ server.exchange(oauth2orize.exchange.password(function (client, username, passwo
 // Exchange refreshToken for access token.
 server.exchange(oauth2orize.exchange.refreshToken(function (client, refreshToken, scope, done) {
 
-    RefreshToken.findOne({token: refreshToken}, function (err, token) {
+    RefreshToken.findOne({code: refreshToken}, function (err, token) {
 
         if (err) {
             return done(err);
@@ -102,25 +99,21 @@ server.exchange(oauth2orize.exchange.refreshToken(function (client, refreshToken
                 return done(null, false);
             }
 
+            // TODO - refactor this into a new method as this is similar to the one in oauth2orize.exchange.password
             // Remove Refresh and Access tokens and create new ones
-            RefreshToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+            RefreshToken.destroy({userId: user.id, clientId: client.id}, function (err) {
                 if (err) {
                     return done(err);
                 } else {
-                    AccessToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
+                    AccessToken.destroy({userId: user.id, clientId: client.id}, function (err) {
                         if (err) {
                             return done(err);
                         } else {
-                            RefreshToken.create({
-                                userId: user.id,
-                                clientId: client.clientId
-                            }, function (err, refreshToken) {
+                            RefreshToken.create({userId: user.id, clientId: client.id}, function (err, refreshToken) {
                                 if (err) {
                                     return done(err);
                                 } else {
-                                    AccessToken.create({
-                                        userId: user.id,
-                                        clientId: client.clientId
+                                    AccessToken.create({userId: user.id, clientId: client.id
                                     }, function (err, accessToken) {
                                         if (err) {
                                             return done(err);
@@ -147,33 +140,6 @@ module.exports = {
             app.use(passport.session());
 
             /***** OAuth authorize endPoints *****/
-
-            app.get('/oauth/authorize',
-                login.ensureLoggedIn(),
-                server.authorize(function (clientId, redirectURI, done) {
-
-                    Client.findOne({clientId: clientId}, function (err, client) {
-                        if (err) {
-                            return done(err);
-                        }
-                        if (!client) {
-                            return done(null, false);
-                        }
-                        if (client.redirectURI != redirectURI) {
-                            return done(null, false);
-                        }
-                        return done(null, client, client.redirectURI);
-                    });
-                }),
-                server.errorHandler(),
-                function (req, res) {
-                    res.render('dialog', {
-                        transactionID: req.oauth2.transactionID,
-                        user: req.user,
-                        client: req.oauth2.client
-                    });
-                }
-            );
 
             app.post('/oauth/authorize/decision',
                 login.ensureLoggedIn(),

@@ -2,26 +2,30 @@
  * Model representing a Client in OAuth.
  */
 
+/*
+ CREATE TABLE Client (
+     id uuid,
+     secret text,
+     name text,
+     PRIMARY KEY (id, secret)
+ )
+ */
 module.exports = {
     attributes: {
-        clientId: {
+        id: {
             type: 'STRING',
-            primaryKey: true
+            required: true/*,
+            primaryKey: true */
         },
-        clientSecret: 'STRING',
+        secret: 'STRING',
         name: {
-            type: 'STRING',
-            required: true
-        },
-        redirectURI: {
             type: 'STRING',
             required: true
         }
     },
 
-    beforeCreate: function(values, next){
-        values.clientId = UUIDService.uuid();
-        values.clientSecret = UUIDService.uuid();
+    beforeValidate: function(values, next){
+        values.id = UUIDService.uuid();
         next();
     }
 };
