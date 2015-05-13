@@ -58,7 +58,7 @@ passport.use(new ClientPasswordStrategy(
 
     function (clientId, clientSecret, done) {
 
-        Client.findOne({
+        OAuthClient.findOne({
             id: clientId
         }, function (err, client) {
             if (err) {
@@ -93,7 +93,6 @@ passport.use(new BearerStrategy(
             var creationDate = moment(token.createdAt).unix();
 
             if( now - creationDate > sails.config.oauth.tokenLife ) {
-                // TODO - add secondaryIndex on code..
                 AccessToken.destroy({ code: accessToken }, function (err) {
                     if (err) return done(err);
                 });

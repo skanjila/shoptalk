@@ -1,19 +1,11 @@
 /**
- * HTTP Server Settings
- * (sails.config.http)
- *
- * Configuration for the underlying HTTP server in Sails.
- * Only applies to HTTP requests (not WebSockets)
- *
- * For more information on configuration, check out:
- * http://sailsjs.org/#/documentation/reference/sails.config/sails.config.http.html
+ * OAuth Config..
  */
 
 var oauth2orize = require('oauth2orize'),
     passport = require('passport'),
-    login = require('connect-ensure-login'),
     bcrypt = require('bcrypt'),
-    trustedClientPolicy = require('../api/policies/isTrustedClient.js');
+    clientPolicy = require('../api/policies/isTrustedClient.js');
 
 var server = oauth2orize.createServer();
 
@@ -138,15 +130,9 @@ module.exports = {
             app.use(passport.initialize());
             app.use(passport.session());
 
-            /***** OAuth authorize endPoints *****/
-
-            app.post('/oauth/authorize/decision',
-                login.ensureLoggedIn(),
-                server.decision());
-
             /***** OAuth token endPoint *****/
             app.post('/oauth/token',
-                trustedClientPolicy,
+                clientPolicy,
                 passport.authenticate(['basic', 'oauth2-client-password'], {session: false}),
                 server.token(),
                 server.errorHandler()

@@ -2,16 +2,23 @@
  * Model representing a Client in OAuth.
  */
 
+// var util = require('util');
+
 /*
- CREATE TABLE Client (
-     id uuid PRIMARY KEY,
+ CREATE TABLE OAuthClient (
+     clientId uuid PRIMARY KEY,
      secret text,
      name text
  );
+
+ CREATE INDEX oauthclient_name ON OAuthClient (name);
  */
 module.exports = {
+    autoCreatedAt: false,
+    autoUpdatedAt: false,
+    autoPK: false,
     attributes: {
-        id: {
+        clientId: {
             type: 'STRING',
             required: true/*,
             primaryKey: true */
@@ -24,7 +31,8 @@ module.exports = {
     },
 
     beforeValidate: function(values, next){
-        values.id = UUIDService.uuid();
+        values.clientId = UUIDService.uuid();
+        // console.log("*** new client: " + util.inspect(values, false, null));
         next();
     }
 };

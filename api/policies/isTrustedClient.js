@@ -22,12 +22,12 @@ module.exports = function (req, res, next) {
                 return res.send(400, 'missing client_id parameter');
             } else {
                 // Make sure client is found..
-                Client.findOne({clientId: clientId}, function (err, client) {
+                OAuthClient.findOne({clientId: clientId}, function (err, client) {
                     if (err) {
                         return res.send(500, err.message);
                     } else {
                         if (!client) {
-                            return res.send(400, "Client with client id " + clientId + " not found");
+                            return res.send(404, "Client-id/secret combination not found");
                         }
                         return next();
                     }
