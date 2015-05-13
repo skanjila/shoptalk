@@ -59,7 +59,7 @@ passport.use(new ClientPasswordStrategy(
     function (clientId, clientSecret, done) {
 
         Client.findOne({
-            clientId: clientId
+            id: clientId
         }, function (err, client) {
             if (err) {
                 return done(err);
@@ -85,12 +85,11 @@ passport.use(new ClientPasswordStrategy(
 passport.use(new BearerStrategy(
     function(accessToken, done) {
 
-        AccessToken.findOne({code:accessToken}, function(err, token) {
+        AccessToken.findOne({code: accessToken}, function(err, token) {
             if (err) { return done(err); }
             if (!token) { return done(null, false); }
 
             var now = moment().unix();
-            // TODO - add "createdAt" field to AccessToken..
             var creationDate = moment(token.createdAt).unix();
 
             if( now - creationDate > sails.config.oauth.tokenLife ) {

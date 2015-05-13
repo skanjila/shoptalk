@@ -15,7 +15,6 @@ var oauth2orize = require('oauth2orize'),
     bcrypt = require('bcrypt'),
     trustedClientPolicy = require('../api/policies/isTrustedClient.js');
 
-// Create OAuth 2.0 server (should be on a different port)
 var server = oauth2orize.createServer();
 
 server.serializeClient(function (client, done) {

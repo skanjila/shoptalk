@@ -8,12 +8,14 @@
      userId uuid,
      clientId uuid,
      scope text,
+     createdAt timestamp,
      PRIMARY KEY (userId, clientId)
  );
+
+ CREATE INDEX accesstoken_code ON AccessToken (code);
 */
 
 module.exports = {
-    autoCreatedAt: false,
     autoUpdatedAt: false,
     autoPK: false,
     attributes	: {

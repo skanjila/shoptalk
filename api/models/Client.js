@@ -4,11 +4,10 @@
 
 /*
  CREATE TABLE Client (
-     id uuid,
+     id uuid PRIMARY KEY,
      secret text,
-     name text,
-     PRIMARY KEY (id, secret)
- )
+     name text
+ );
  */
 module.exports = {
     attributes: {

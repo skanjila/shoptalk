@@ -14,6 +14,8 @@
      dob timestamp,
      gender varchar
  );
+
+ CREATE INDEX user_id ON User (id);
  */
 
 var bcrypt = require('bcrypt');

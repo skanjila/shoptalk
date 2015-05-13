@@ -8,7 +8,9 @@
      clientId uuid,
      userId uuid,
      PRIMARY KEY (userId, clientId)
- )
+ );
+
+ CREATE INDEX refreshtoken_code ON RefreshToken (code);
  */
 
 module.exports = {
