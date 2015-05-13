@@ -7,8 +7,8 @@
 /*
  CREATE TABLE OAuthClient (
      clientId uuid PRIMARY KEY,
-     secret text,
-     name text
+     secret varchar,
+     name varchar
  );
 
  CREATE INDEX oauthclient_name ON OAuthClient (name);
@@ -20,10 +20,12 @@ module.exports = {
     attributes: {
         clientId: {
             type: 'STRING',
-            required: true/*,
-            primaryKey: true */
+            primaryKey: true
         },
-        secret: 'STRING',
+        secret: {
+            type: 'STRING',
+            required: true
+        },
         name: {
             type: 'STRING',
             required: true
