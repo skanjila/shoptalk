@@ -19,15 +19,16 @@ module.exports = {
     autoUpdatedAt: false,
     autoPK: false,
     attributes: {
-        clientId: {
-            type: 'STRING',
-            required: true/*,
-             primaryKey: true */
-        },
         userId: {
             type: 'STRING',
             required: true/*,
              primaryKey: true */
+        },
+        clientId: {
+            type: 'STRING',
+            required: true/*,
+             primaryKey: true */
+            // Waterline doesn't allow composite primary keys, so, comment primaryKey as a temporary workaround
         },
         code: {
             type: 'STRING',

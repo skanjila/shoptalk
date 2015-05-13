@@ -7,7 +7,7 @@
      code uuid,
      userId uuid,
      clientId uuid,
-     scope text,
+     scope varchar,
      createdAt timestamp,
      PRIMARY KEY (userId, clientId)
  );
@@ -23,13 +23,15 @@ module.exports = {
             type: 'STRING',
             required: true
         },
-        clientId: {
-            type: 'STRING',
-            required: true
-        },
         userId: {
             type: 'STRING',
-            required: true
+            primaryKey: true
+        },
+        clientId: {
+            type: 'STRING',
+            required: true/*,
+             primaryKey: true */
+            // Waterline doesn't allow composite primary keys, so, comment primaryKey as a temporary workaround
         },
         scope: {
             type: 'STRING',
@@ -38,7 +40,7 @@ module.exports = {
     },
 
     beforeValidate: function(values, next){
-        values.token = UUIDService.uuid();
+        values.code = UUIDService.uuid();
         next();
     }
 };
