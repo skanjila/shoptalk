@@ -21,8 +21,8 @@ module.exports = {
     attributes: {
         userId: {
             type: 'STRING',
-            required: true/*,
-             primaryKey: true */
+            required: true,
+            primaryKey: true
         },
         clientId: {
             type: 'STRING',

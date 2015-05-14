@@ -59,7 +59,7 @@ passport.use(new ClientPasswordStrategy(
     function (clientId, clientSecret, done) {
 
         OAuthClient.findOne({
-            id: clientId
+            clientId: clientId
         }, function (err, client) {
             if (err) {
                 return done(err);

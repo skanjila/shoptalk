@@ -38,19 +38,19 @@ server.exchange(oauth2orize.exchange.password(function (client, username, passwo
         }
 
         // Remove Refresh and Access tokens and create new ones
-        RefreshToken.destroy({userId: user.id, clientId: client.id}, function (err) {
+        RefreshToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
             if (err) {
                 return done(err);
             } else {
-                AccessToken.destroy({userId: user.id, clientId: client.id}, function (err) {
+                AccessToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
                     if (err) {
                         return done(err);
                     } else {
-                        RefreshToken.create({userId: user.id, clientId: client.id}, function (err, refreshToken) {
+                        RefreshToken.create({userId: user.id, clientId: client.clientId}, function (err, refreshToken) {
                             if (err) {
                                 return done(err);
                             } else {
-                                AccessToken.create({userId: user.id, clientId: client.id}, function (err, accessToken) {
+                                AccessToken.create({userId: user.id, clientId: client.clientId, scope: scope}, function (err, accessToken) {
                                     if (err) {
                                         return done(err);
                                     } else {
@@ -92,19 +92,19 @@ server.exchange(oauth2orize.exchange.refreshToken(function (client, refreshToken
 
             // TODO - refactor this into a new method as this is similar to the one in oauth2orize.exchange.password
             // Remove Refresh and Access tokens and create new ones
-            RefreshToken.destroy({userId: user.id, clientId: client.id}, function (err) {
+            RefreshToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
                 if (err) {
                     return done(err);
                 } else {
-                    AccessToken.destroy({userId: user.id, clientId: client.id}, function (err) {
+                    AccessToken.destroy({userId: user.id, clientId: client.clientId}, function (err) {
                         if (err) {
                             return done(err);
                         } else {
-                            RefreshToken.create({userId: user.id, clientId: client.id}, function (err, refreshToken) {
+                            RefreshToken.create({userId: user.id, clientId: client.clientId}, function (err, refreshToken) {
                                 if (err) {
                                     return done(err);
                                 } else {
-                                    AccessToken.create({userId: user.id, clientId: client.id
+                                    AccessToken.create({userId: user.id, clientId: client.clientId
                                     }, function (err, accessToken) {
                                         if (err) {
                                             return done(err);

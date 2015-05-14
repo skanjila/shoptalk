@@ -14,7 +14,7 @@ module.exports.bootstrap = function(cb) {
     // Create a user
     User.findOne({"phone":"123-456-7890"}, function(err, user){
         if(!user){
-            User.create({"id":"demo", "password":"demo", "phone":"123-456-7890", "name": "demo"}).exec(
+            User.create({"id":"demo", "password":"password", "phone":"123-456-7890", "name": "demo"}).exec(
                 function(err,user){
                     console.log("Default user created");
                     console.log("- username: 123-456-7890");

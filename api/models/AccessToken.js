@@ -7,7 +7,6 @@
      code uuid,
      userId uuid,
      clientId uuid,
-     scope varchar,
      createdAt timestamp,
      PRIMARY KEY (userId, clientId)
  );
@@ -32,10 +31,6 @@ module.exports = {
             required: true/*,
              primaryKey: true */
             // Waterline doesn't allow composite primary keys, so, comment primaryKey as a temporary workaround
-        },
-        scope: {
-            type: 'STRING',
-            required: true
         }
     },
 
