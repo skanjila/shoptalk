@@ -5,7 +5,7 @@
 module.exports = {
 
     attributes	: {
-
+/**
         id: 'INTEGER',
         type:  'STRING',
         name: 'STRING',
@@ -15,5 +15,7 @@ module.exports = {
         source:{name:'STRING', url:'STRING'},
         postedBy:{name:'STRING',user_id:'STRING'},
         link:'STRING'
+ **/
     }
+
 };

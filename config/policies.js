@@ -18,6 +18,14 @@
 
 
 module.exports.policies = {
+    // Default policy for all controllers and actions (`true` allows public access)
+    '*': false,
+
+    SocialController: {
+        '*': false,
+        'index': 'oauthBearer'
+    }
+
 
   /***************************************************************************
   *                                                                          *

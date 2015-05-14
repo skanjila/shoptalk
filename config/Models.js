@@ -10,6 +10,8 @@
  */
 
 module.exports.models = {
+    connection: 'shoptalkcassandraconnection',
+    migrate: 'safe'
 
   /***************************************************************************
   *                                                                          *

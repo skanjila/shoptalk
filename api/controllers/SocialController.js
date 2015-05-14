@@ -6,6 +6,10 @@
  */
 
 module.exports = {
-	
+
+    index: function(req,res)
+    {
+        res.json({"msg":"Successful OAuth2 Authorization..."});
+    }
 };
 

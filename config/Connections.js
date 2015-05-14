@@ -5,7 +5,7 @@ module.exports.connections = {
 
     shoptalkcassandraconnection: {
 
-    module        : 'sails-cassandra',
+        module        : 'sails-cassandra',
 
         // typical sails/waterline options (see comment below)
         user          : 'cassandra',
@@ -14,5 +14,5 @@ module.exports.connections = {
         // cassandra driver options
         contactPoints : [ 'ec2-52-24-107-37.us-west-2.compute.amazonaws.com' ],
         keyspace      : 'shoptalk'
-}
+    }
 };
