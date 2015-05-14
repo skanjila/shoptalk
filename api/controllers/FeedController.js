@@ -6,6 +6,11 @@
  */
 
 module.exports = {
-	
+    new: function (req, res) {
+        return res.send("Hi there I am feed manager in charge of creating a new feed!");
+    },
+    edit: function (req, res) {
+        return res.send("Hi there I am feed manager in charge of editing a pre-existing feed!");
+    }
 };
 

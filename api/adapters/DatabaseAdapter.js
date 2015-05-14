@@ -1,6 +1,6 @@
 var assert=require('assert');
 var cassandra = require('cassandra-driver');
-var client = new cassandra.Client({contactPoints: ['127.0.0.1'], keyspace: 'shoptalk'});
+var client = new cassandra.Client({contactPoints: ['ec2-52-24-107-37.us-west-2.compute.amazonaws.com'], keyspace: 'shoptalk'});
 
 
 var query = 'SELECT * from shoptalk_feed';
