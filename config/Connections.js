@@ -8,11 +8,11 @@ module.exports.connections = {
     module        : 'sails-cassandra',
 
         // typical sails/waterline options (see comment below)
-        user          : 'username',
-        password      : 'password',
+        user          : 'cassandra',
+        password      : 'cassandra',
 
         // cassandra driver options
-        contactPoints : [ '127.0.0.1' ],
+        contactPoints : [ 'ec2-52-24-107-37.us-west-2.compute.amazonaws.com' ],
         keyspace      : 'shoptalk'
 }
 };
